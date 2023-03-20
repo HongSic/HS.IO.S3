@@ -3,7 +3,6 @@ using Amazon.S3.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace HS.IO.S3
@@ -78,6 +77,11 @@ namespace HS.IO.S3
         }
 
         public override void SetTimestamp(string Path, DateTime Timestamp, IOItemKind Kind = IOItemKind.None)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Stream Open(string Path)
         {
             throw new NotImplementedException();
         }
