@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.103.31" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.32" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HS.IO\HS.IO.csproj" />
+    <ProjectReference Include="..\HS.Utils\HS.Utils.csproj" />
   </ItemGroup>
 
 </Project>

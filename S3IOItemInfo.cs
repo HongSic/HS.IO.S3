@@ -1,4 +1,5 @@
 ﻿using Amazon.S3.Model;
+using HS.Utils;
 using System;
 
 namespace HS.IO.S3
@@ -14,6 +15,7 @@ namespace HS.IO.S3
             var split = Metadata.Headers.ContentType.Split(';');
             _Type = split[0].Trim();
             _Kind = _Type.ToLower() == "application/x-directory" ? IOItemKind.Directory : IOItemKind.File;
+            VersionID = Metadata.VersionId;
         }
 
         private string _Type;
@@ -29,5 +31,14 @@ namespace HS.IO.S3
         public override long Length => _Length;
         public override DateTime ModifyTime => _ModifyTime;
         public override DateTime CreateTime => _CreateTime;
+
+        public string VersionID { get; private set; }
+
+        public override string ToString()
+        {
+            //string name = string.IsNullOrEmpty(Extension) ? Name : string.Format("{0}.{1}", Name, Extension);
+            if (Kind == IOItemKind.File) return string.Format("[F] {0} ({1})", Path, ByteMeasure.NetworkString(Length, false, true, false, 2));
+            else return $"[D] {Path}";
+        }
     }
 }
