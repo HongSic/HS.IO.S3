@@ -1,5 +1,5 @@
 ﻿using Amazon.S3.Model;
-using HS.Utils;
+using HS.Utils.IO;
 using System;
 
 namespace HS.IO.S3
