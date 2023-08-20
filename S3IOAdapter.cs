@@ -55,22 +55,35 @@ namespace HS.IO.S3
         }
 
         public override IOItemInfo GetInfo(string Path) => GetInfoAsync(Path).GetAwaiter().GetResult();
-        public override async Task<IOItemInfo> GetInfoAsync(string Path, CancellationToken cancellationToken = default) => new S3IOItemInfo(Path, await S3Client.GetObjectMetadataAsync(Bucket, Path, cancellationToken));
+        public override async Task<IOItemInfo> GetInfoAsync(string Path, CancellationToken cancellationToken = default)
+        {
+            try { return new S3IOItemInfo(Path, await S3Client.GetObjectMetadataAsync(Bucket, Path, cancellationToken)); }
+            catch (AmazonS3Exception ex)
+            {
+                if (ex.StatusCode == System.Net.HttpStatusCode.NotFound) return null;
+                else throw;
+            }
+        }
 
         public override void Delete(string Path) => DeleteAsync(Path).GetAwaiter().GetResult();
-        public override async Task DeleteAsync(string Path, CancellationToken cancellationToken = default) => await S3Client.DeleteObjectAsync(Bucket, Path, cancellationToken);
+        public override Task DeleteAsync(string Path, CancellationToken cancellationToken = default) => S3Client.DeleteObjectAsync(Bucket, Path, cancellationToken);
+        public override void DeleteDirectory(string Path) => DeleteDirectoryAsync(Path).GetAwaiter().GetResult();
+        public override Task DeleteDirectoryAsync(string Path, CancellationToken cancellationToken = default) => S3Client.DeleteObjectAsync(Bucket, StringUtils.PathMaker(Path, "/"), cancellationToken);
 
         public override bool Exist(string Path) => ExistAsync(Path).GetAwaiter().GetResult();
-        public override async Task<bool> ExistAsync(string Path, CancellationToken cancellationToken = default) => await GetInfoAsync(Path, cancellationToken) != null || await GetInfoAsync(StringUtils.PathMaker(Path, "/"), cancellationToken) != null;
+        public override async Task<bool> ExistAsync(string Path, CancellationToken cancellationToken = default) => await GetInfoAsync(Path, cancellationToken) != null;
+        public override bool ExistDirectory(string Path) => ExistDirectoryAsync(Path).GetAwaiter().GetResult();
+        public override async Task<bool> ExistDirectoryAsync(string Path, CancellationToken cancellationToken = default) => await GetInfoAsync(StringUtils.PathMaker(Path, "/"), cancellationToken) != null;
 
         public override void CreateDirectory(string Path) => CreateDirectoryAsync(Path).GetAwaiter().GetResult();
-        public override Task CreateDirectoryAsync(string Path, CancellationToken cancellationToken = default) => _Create(StringUtils.PathMaker(Path, "/"), cancellationToken);
+        public override Task CreateDirectoryAsync(string Path, CancellationToken cancellationToken = default) => _Create(StringUtils.PathMaker(Path, "/"), false, cancellationToken);
+
 
         public override void Create(string Path) => CreateAsync(Path).GetAwaiter().GetResult();
-        public override async Task CreateAsync(string Path, CancellationToken cancellationToken = default) => await _Create(Path, cancellationToken);
-        private async Task _Create(string Path, CancellationToken cancellationToken = default)
+        public override Task CreateAsync(string Path, CancellationToken cancellationToken = default) => _Create(Path, true, cancellationToken);
+        private async Task _Create(string Path, bool IsFile, CancellationToken cancellationToken = default)
         {
-            if (Path[Path.Length - 1] == SeparatorChar) throw new IOException("Path does not allow directory!!", unchecked((int)0x80070057));
+            if (IsFile && Path[Path.Length - 1] == SeparatorChar) throw new IOException("Path does not allow directory!!", unchecked((int)0x80070057));
             await S3Client.PutObjectAsync(new PutObjectRequest()
             {
                 BucketName = Bucket,
