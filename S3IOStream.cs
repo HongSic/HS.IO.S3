@@ -26,7 +26,10 @@ namespace HS.IO.S3
 
         public override long Length => BaseStream.Length;
 
-        public override long Position { get => BaseStream.Position; set => BaseStream.Position = value; }
+        public override long Position {
+            get { return BaseStream.Position; }
+            set { BaseStream.Position = value; } 
+        }
 
         public override void Flush() => BaseStream.Flush();
         public override Task FlushAsync(CancellationToken cancellationToken) => BaseStream.FlushAsync();
@@ -57,8 +60,8 @@ namespace HS.IO.S3
         public override int EndRead(IAsyncResult asyncResult) => BaseStream.EndRead(asyncResult);
         public override void EndWrite(IAsyncResult asyncResult) => BaseStream.EndWrite(asyncResult);
 
-        public override int ReadTimeout { get => BaseStream.ReadTimeout; set => BaseStream.ReadTimeout = value; }
-        public override int WriteTimeout { get => BaseStream.WriteTimeout; set => BaseStream.WriteTimeout = value; }
+        public override int ReadTimeout { get { return BaseStream.ReadTimeout; } set { BaseStream.ReadTimeout = value; } }
+        public override int WriteTimeout { get { return BaseStream.WriteTimeout; } set { BaseStream.WriteTimeout = value; } }
 
         public override bool CanTimeout => BaseStream.CanTimeout;
         #endregion

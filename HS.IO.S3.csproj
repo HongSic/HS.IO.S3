@@ -2,6 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>6</LangVersion>
+    <PackageProjectUrl>https://github.com/HongSic/HS.IO.S3.git</PackageProjectUrl>
+    <Title>HS.IO.S3</Title>
+    <Authors>HSKernel</Authors>
+    <Description>HS C# I/O Framework S3 Implement</Description>
+    <Version>1.0.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>HSKernel</Copyright>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
